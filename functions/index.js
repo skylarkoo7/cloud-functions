@@ -1,10 +1,11 @@
-const {doc, getDoc } = require("firebase/firestore");
-
-
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
-
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -23,13 +24,17 @@ const serviceAccount = require("./serviceAccountKey.json");
   app.use(express.json());
   app.use(
       session({
-        secret: "xinasdlkmasd",
+        secret: process.env.JWT_SECRET,
         resave: false,
         saveUninitialized: true,
         cookie: {secure: false},
       }),
   );
-
+  const getCurrentIST = () => {
+    // TODO format must be 'YYYY-MM-DD HH:mm:ss'
+    const datetime = dayjs().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+    return datetime;
+  };
   // Routes
   app.get("/", (req, res) =>{
     return res.status(200).send("How are you doing");
@@ -83,10 +88,14 @@ const serviceAccount = require("./serviceAccountKey.json");
 
       await db.collection("userDetails").doc(`/${Date.now()}/`).create({
         id: Date.now(),
+        username : req.body.username,
         email: email,
         name: req.body.name,
         mobile: req.body.mobile,
         address: req.body.address,
+        hashedPassword : hashedPassword,
+        created_at : getCurrentIST(),
+        updated_at: getCurrentIST(),
       });
 
       return res.status(200).send({
@@ -109,6 +118,7 @@ app.post("/api/login", async (req, res) => {
   try { 
     const userRef = db.collection("userDetails").where("email", "==", email);
     const snapshot = await userRef.get();
+    console.log(userRef);
 
     if (snapshot.empty) {
       return res.status(401).json({ status: "Failed", msg: "Wrong credentials" });
@@ -126,25 +136,26 @@ app.post("/api/login", async (req, res) => {
 
     const userInfo = {
       id: userData.id,
+      username : userData.username,
       email: userData.email,
       name: userData.name,
       mobile: userData.mobile,
       address: userData.address,
      };
 
-    const token = jwt.sign({userId: userData.id}, "xinasdlkmasd", {
+    const token = jwt.sign({userId: userData.id}, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
     req.session.token = token;
 
     // Generate update password token
-    const updatePasswordToken = jwt.sign({ userId: userData.id }, "xinasdlkmasd", {
+    const updatePasswordToken = jwt.sign({ userId: userData.id }, process.env.JWT_SECRET, {
       expiresIn: "1h", // Set an appropriate expiration time
     });
 
     // Send token and update password token in response
-    return res.status(200).json({ status: "Success",updatePasswordToken : updatePasswordToken , token: token, userInfo: userInfo });
+    return res.status(200).json({ status: "Success",updatePasswordToken : updatePasswordToken , userInfo: userInfo });
   } catch (error) {
     console.error("Error fetching user:", error);
     return res.status(500).json({ status: "Failed", msg: "Internal server error" });
@@ -158,7 +169,7 @@ app.post("/api/update-password", async (req, res) => {
 
   try {
     // Verify update password token
-    jwt.verify(updatePasswordToken, "xinasdlkmasd", async (err, decoded) => {
+    jwt.verify(updatePasswordToken, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
         return res.status(401).json({ status: "Failed", msg: "Invalid or expired update password token" });
       }
@@ -198,7 +209,7 @@ app.get("/api/user-info", async (req, res) => {
     }
 
     // Verify the token
-    jwt.verify(token, "xinasdlkmasd", async (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
         return res.status(401).json({ status: "Failed", msg: "Invalid or expired token" });
       }
@@ -292,24 +303,53 @@ app.get("/api/user-info", async (req, res) => {
     })();
   });
 
-  // Update -> put()
-  app.put("/api/update/:id", (req, res) => {
-    (async () => {
-      try {
-        const reqDoc = db.collection("userDetails").doc(req.params.id);
-        await reqDoc.update({
-          name: req.body.name,
-          email: req.body.email,
-          mobile: req.body.mobile,
-          address: req.body.address,
-        });
-        return res.status(200).send({status: "Success", msg: "Data Updated"});
-      } catch (error) {
-        console.log(error);
-        res.status(500).send({status: "Failed", msg: error});
-      }
-    })();
-  });
+  const getUserIdFromToken = (token) => {
+    try {
+      // Verify the token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Replace 'your_secret_key' with your actual secret key
+      // Extract user ID from the decoded token
+      const userId = decoded.userId;
+      return userId;
+    } catch (error) {
+      // If token verification fails or token is invalid, return null
+      return null;
+    }
+  };
+  // Update user details based on token
+app.put("/api/update-info", async (req, res) => {
+  try {
+    const token = req.body.token;
+
+    // Verify the token and extract user ID
+    const userId = getUserIdFromToken(token);
+    console.log(userId);
+    if (!userId) {
+      return res.status(401).json({ status: "Failed", msg: "Invalid token" });
+    }
+
+    // Check if the user exists
+    const userRef = db.collection("userDetails").doc(userId.toString());
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ status: "Failed", msg: "User not found" });
+    }
+
+    // Update user details
+    await userRef.update({
+      username : req.body.username,
+      name: req.body.name,
+      mobile: req.body.mobile,
+      address: req.body.address,
+      updated_at: getCurrentIST(),
+    });
+
+    return res.status(200).json({ status: "Success", msg: "Data Updated" });
+  } catch (error) {
+    console.error("Error updating user data:", error);
+    return res.status(500).json({ status: "Failed", msg: "Internal server error" });
+  }
+});
 
   // Delete -> delete()
   app.delete("/api/delete/:id", (req, res) => {
