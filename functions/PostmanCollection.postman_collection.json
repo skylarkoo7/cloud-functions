@@ -1,0 +1,307 @@
+{
+	"info": {
+		"_postman_id": "4cea759d-fabb-404e-a5b4-e18afb1ea928",
+		"name": "Cloud Functions Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33726719"
+	},
+	"item": [
+		{
+			"name": "home",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \"username\" : \"demouser1\",\r\n    \"email\": \"demo1@gmail.com\",\r\n    \"password\": \"demo@123\",\r\n    \"confirmPassword\":\"demo@123\",\r\n    \"name\": \"Demo Guest\",\r\n    \"mobile\": 1231231231,\r\n    \"address\": \"Willeder Inc.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/register",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"test2@gmail.com\",\r\n    \"password\":\"testtest123123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/login",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update password",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MTI1Mjk0MDg5NDAsImlhdCI6MTcxMjUyOTQ4MSwiZXhwIjoxNzEyNTMzMDgxfQ.gqpw5Vt2PTrctEgtZhrCoDH9pR6douNKYXwwto_Y7Jg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"updatePasswordToken\" : \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MTI1MzMwNzQ3NTQsImlhdCI6MTcxMjUzMzA4MSwiZXhwIjoxNzEyNTM2NjgxfQ.lNcVvt8Gni21X74D0V00Mt_ZTLMTtIEXJPhXd12MFe8\",\r\n    \"newPassword\" : \"KrutSingle\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/update-password",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"update-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update info",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\" : \"Insert token recevied from login\",\r\n    \"name\" : \"Neel\",\r\n    \"username\" : \"xyzxyz\",\r\n    \"mobile\" : \"8484848484\",\r\n    \"address\" : \"Rajkot\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/update-info",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"update-info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MTI1MzMwNzQ3NTQsImlhdCI6MTcxMjUzMzA4MSwiZXhwIjoxNzEyNTM2NjgxfQ.lNcVvt8Gni21X74D0V00Mt_ZTLMTtIEXJPhXd12MFe8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MTI1MDY1Njc3NjAsImlhdCI6MTcxMjUxMDk0MSwiZXhwIjoxNzEyNTE0NTQxfQ.DZ47PxItmUzjiNwzqrlGAb8B73syJw2txkc525yXNjM",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/user-info",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"user-info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MTI1MDY1Njc3NjAsImlhdCI6MTcxMjUxNDkwNywiZXhwIjoxNzEyNTE4NTA3fQ.1LTvDqBVvDNTKXkk0oXjvzxrc4d4_kDfwDArFaAiCSw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/logout",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/delete/1712314493918",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"delete",
+						"1712314493918"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
