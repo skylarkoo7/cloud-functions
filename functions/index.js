@@ -6,6 +6,8 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
 dayjs.extend(utc);
 dayjs.extend(timezone);
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -96,6 +98,7 @@ dayjs.extend(timezone);
         hashedPassword : hashedPassword,
         created_at : getCurrentIST(),
         updated_at: getCurrentIST(),
+        status : null,
       });
 
       return res.status(200).send({
@@ -118,8 +121,7 @@ app.post("/api/login", async (req, res) => {
   try { 
     const userRef = db.collection("userDetails").where("email", "==", email);
     const snapshot = await userRef.get();
-    console.log(userRef);
-
+    console.log(snapshot);
     if (snapshot.empty) {
       return res.status(401).json({ status: "Failed", msg: "Wrong credentials" });
     }
@@ -364,6 +366,101 @@ app.put("/api/update-info", async (req, res) => {
       }
     })();
   });
+
+// Function to send email for password reset
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+     user: 'fpfransiscopatel@gmail.com',
+     pass: 'ggnn ioyf qntx jrui'
+  }
+ });
+
+ const generateResetToken = () => {
+  return crypto.randomBytes(20).toString('hex');
+ };
+
+ const sendResetPasswordEmail = async (email, token) => {
+  const mailOptions = {
+     from: 'fpfransiscopatel@gmail.com',
+     to: email,
+     subject: 'Password Reset',
+     text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+     Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n
+     Use this token ${token}\n\n
+     If you did not request this, please ignore this email and your password will remain unchanged.\n`
+  };
+  await transporter.sendMail(mailOptions);
+};
+
+// Reset Password API Endpoint
+app.post('/api/reset-password', async (req, res) => {
+  const { email } = req.body;
+ 
+  try {
+     // Check if the user exists
+     const userRef = db.collection("userDetails").where("email", "==", email);
+     const snapshot = await userRef.get();
+ 
+     if (snapshot.empty) {
+       return res.status(404).json({ status: "Failed", msg: "User not found" });
+     }
+ 
+     let userData;
+     snapshot.forEach((doc) => {
+       userData = doc.data();
+     });
+ 
+     // Generate a reset token
+     const resetToken = generateResetToken();
+ 
+     // Save the reset token in the user's document
+     await db.collection("userDetails").doc(userData.id.toString()).update({ resetToken: resetToken });
+ 
+     // Send the reset password email
+     await sendResetPasswordEmail(email, resetToken);
+ 
+     return res.status(200).json({ status: "Success", msg: "Reset password email sent" });
+  } catch (error) {
+     console.error("Error resetting password:", error);
+     return res.status(500).json({ status: "Failed", msg: "Internal server error" });
+  }
+ });
+ 
+ // Reset password form API
+ app.post('/api/reset-password-form', async (req, res) => {
+  const { token, newPassword } = req.body;
+ 
+  try {
+     // Find the user with the provided token
+     const userRef = db.collection("userDetails").where("resetToken", "==", token);
+     const snapshot = await userRef.get();
+ 
+     if (snapshot.empty) {
+       return res.status(404).json({ status: "Failed", msg: "Invalid or expired reset token" });
+     }
+ 
+     let userData;
+     snapshot.forEach((doc) => {
+       userData = doc.data();
+     });
+ 
+     // Hash the new password
+     const hashedPassword = await bcrypt.hash(newPassword, 10);
+ 
+     // Update the user's password and remove the reset token
+     await db.collection("userDetails").doc(userData.id.toString()).update({
+       hashedPassword: hashedPassword,
+       resetToken: null
+     });
+ 
+     return res.status(200).json({ status: "Success", msg: "Password reset successfully" });
+  } catch (error) {
+     console.error("Error resetting password:", error);
+     return res.status(500).json({ status: "Failed", msg: "Internal server error" });
+  }
+ });
+
 
   // exports the api to firebase cloud functions
   exports.app= functions.https.onRequest(app);

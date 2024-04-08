@@ -38,7 +38,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{   \"username\" : \"demouser1\",\r\n    \"email\": \"demo1@gmail.com\",\r\n    \"password\": \"demo@123\",\r\n    \"confirmPassword\":\"demo@123\",\r\n    \"name\": \"Demo Guest\",\r\n    \"mobile\": 1231231231,\r\n    \"address\": \"Willeder Inc.\"\r\n}",
+					"raw": "{   \"username\" : \"demouser1\",\r\n    \"email\": \"harsolaneel1@gmail.com\",\r\n    \"password\": \"demo@123\",\r\n    \"confirmPassword\":\"demo@123\",\r\n    \"name\": \"Demo Guest\",\r\n    \"mobile\": 1231231231,\r\n    \"address\": \"Willeder Inc.\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -73,7 +73,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\" : \"test2@gmail.com\",\r\n    \"password\":\"testtest123123\"\r\n}",
+					"raw": "{\r\n    \"email\" : \"harsolaneel1@gmail.com\",\r\n    \"password\":\"Fenil123\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -125,7 +125,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"updatePasswordToken\" : \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MTI1MzMwNzQ3NTQsImlhdCI6MTcxMjUzMzA4MSwiZXhwIjoxNzEyNTM2NjgxfQ.lNcVvt8Gni21X74D0V00Mt_ZTLMTtIEXJPhXd12MFe8\",\r\n    \"newPassword\" : \"KrutSingle\"\r\n}",
+					"raw": "{\r\n    \"updatePasswordToken\" : \"Insert token recevied from login\",\r\n    \"newPassword\" : \"Demo@321\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -298,6 +298,76 @@
 						"api",
 						"delete",
 						"1712314493918"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reset password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"harsolaneel1@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/reset-password",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"reset-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "password form",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\" : \"7033f1b2465e3d172cfd2e6dc630c80b9e6b469f\",\r\n    \"newPassword\" : \"Fenil123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5001/cloudfunctions-1c323/us-central1/app/api/reset-password-form",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5001",
+					"path": [
+						"cloudfunctions-1c323",
+						"us-central1",
+						"app",
+						"api",
+						"reset-password-form"
 					]
 				}
 			},
