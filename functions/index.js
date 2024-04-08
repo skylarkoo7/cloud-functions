@@ -30,10 +30,9 @@ const crypto = require('crypto');
         resave: false,
         saveUninitialized: true,
         cookie: {secure: false},
-      }),
-  );
+      }));
+      
   const getCurrentIST = () => {
-    // TODO format must be 'YYYY-MM-DD HH:mm:ss'
     const datetime = dayjs().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
     return datetime;
   };
