@@ -371,8 +371,8 @@ app.put("/api/update-info", async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-     user: 'fpfransiscopatel@gmail.com',
-     pass: 'ggnn ioyf qntx jrui'
+     user: process.env.EMAIL_ID,
+     pass: process.env.KEY_GEN,
   }
  });
 
@@ -382,12 +382,12 @@ const transporter = nodemailer.createTransport({
 
  const sendResetPasswordEmail = async (email, token) => {
   const mailOptions = {
-     from: 'fpfransiscopatel@gmail.com',
+     from: process.env.EMAIL_ID,
      to: email,
      subject: 'Password Reset',
      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
      Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n
-     Use this token ${token}\n\n
+     Use this token : ${token}\n\n
      If you did not request this, please ignore this email and your password will remain unchanged.\n`
   };
   await transporter.sendMail(mailOptions);
